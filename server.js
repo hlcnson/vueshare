@@ -1,10 +1,33 @@
 
-// Sử dụng cú pháp Destructing Assignment của JS (ECMA6)
-// để gán giá trị của 2 biến đối tượng ApolloServer và gql.
+// Sử dụng cú pháp Destructing Assignment của JS (ECMA6) để sử dụng
+// package tên apollo-server.
+// Các package được cài đặt vào ứng dụng trong thư mục node_modules bằng npm.
+// Tạo hai đối tượng tên ApolloServer và gql để trỏ đến 2 object trong package.
 // Cú pháp này tương đương 2 lệnh sau:
 // ApolloServer = require("apollo-server").ApolloServer;
 // gql = require("apollo-server").gql;
 const { ApolloServer, gql } = require("apollo-server");
+
+// Khai báo sử dụng package mongoose để làm việc với mongoo DB
+const mongoose = require("mongoose");
+
+// Kích hoạt code của package dotenv để truy cập các entry trong các file .env như 
+// các biến môi trường, environment variables.
+// Kích hoạt require như một phương thức. Sau lệnh này, dotenv sẽ nạp các cặp entry/value 
+// trong file .env vào biến toàn cục kiểu đối tượng của Nodejs tên process.env
+// Biến toàn cục kiểu đối tượng tên process.env được NodeJS inject vào ứng dụng 
+// lúc runtime để ứng dụng có thể sử dụng các biến bên trong nó.
+// Thuộc tính path được dùng để chỉ đường dẫn tường minh đến file .env
+// Nếu không chỉ định đường dẫn, file .env sẽ được truy cập tại đường dẫn của
+// file làm entry point cho ứng dụng (thường là thư mục gốc của ứng dụng).
+require('dotenv').config({path: 'variables.env'});
+
+// Kết nối với cơ sở dữ liệu qua URI trong file variables.env
+mongoose
+    .connect(process.env.MONGO_URI, {useNewUrlParser: true})     // Kết nối DB
+    .then(() => console.log('DB connected!'))   // Thông báo đã kết nối
+    .catch(err => console.log(err));            // Thông báo lỗi kết nối
+
 
 // Tạo một mảng object
 const todos = [
@@ -31,37 +54,15 @@ type Todo {
 type Query {
     getTodos: [Todo]
 }
-
-type Mutation{
-    addTodo(task: String, completed: Boolean): Todo
-}
 `;
 
-
-// Tạo đối tượng resolver để cài đặt các function trong schema
-// Thuộc tính Query (kiểu object) giúp cài đặt các query trong schema.
-// Trong đối tượng Query, đặc tả các function có trong schema
-const resolvers = {
-    Query: {
-//        getTodos: function(){
-//            return todos;
-//        }
-//        Có thể viết lại thành cú pháp arrow function như sau:
-        getTodos: () => todos
-    }
-    
-    Mutation: {
-        addTodo: 
-    }
-};
 
 // Khởi tạo đối tượng Apollo Server và lưu kết quả trả về vào hằng server
 const server = new ApolloServer({
 //    Tên thuộc tính và tên kiểu dữ liệu trùng nhau nên có thể viết gọn 
 //    thành:
 //    typeDefs, resolvers
-    typeDefs: typeDefs,
-    resolvers: resolvers
+    typeDefs: typeDefs
 });
 // Kích hoạt server, lắng nghe request trên port 4000 (http://localhost:4000/)
 server.listen().then(({ url }) => {
