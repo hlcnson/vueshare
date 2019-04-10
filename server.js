@@ -22,6 +22,10 @@ const mongoose = require("mongoose");
 // file làm entry point cho ứng dụng (thường là thư mục gốc của ứng dụng).
 require('dotenv').config({path: 'variables.env'});
 
+// Tạo 2 đối tượng model User và Post. Path chứa tên file không cần đuôi .js
+const User = require('./models/User');
+const Post = require('./models/Post.js');
+
 // Kết nối với cơ sở dữ liệu qua URI trong file variables.env
 mongoose
     .connect(process.env.MONGO_URI, {useNewUrlParser: true})     // Kết nối DB
@@ -62,7 +66,12 @@ const server = new ApolloServer({
 //    Tên thuộc tính và tên kiểu dữ liệu trùng nhau nên có thể viết gọn 
 //    thành:
 //    typeDefs, resolvers
-    typeDefs: typeDefs
+    typeDefs: typeDefs,
+    // Khai báo đối tượng context để Apollo server có thể truy cập 2 model User và Post
+    context: {
+        User,
+        Post
+    }
 });
 // Kích hoạt server, lắng nghe request trên port 4000 (http://localhost:4000/)
 server.listen().then(({ url }) => {
