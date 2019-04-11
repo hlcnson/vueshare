@@ -19,13 +19,16 @@ type Todo {
     task: String 
     completed: Boolean
 }
+// Đặc tả query để truy vấn dữ liệu
+// Query sẽ chứa các function để truy vấn dữ liệu
 type Query {
+//  Function getTodos có kiểu return là mảng các đối tượng kiểu Todo
     getTodos: [Todo]
 }
 `;
 
 
-
+// Tạo một đối tượng resolse
 
 // Khởi tạo đối tượng Apollo Server và lưu kết quả trả về vào hằng server
 const server = new ApolloServer({
