@@ -1,0 +1,29 @@
+# Định nghĩa Graphql schema cho model User
+type User {
+    _id: ID     # Đây là field tự động gán giá trị bởi MongoDB
+    username: String! @unique   # Dấu ! có nghĩa là require, @unique là duy nhất
+    email: String!
+    password: String!
+    avatar: String
+    joinDate: String    # Graphql không có kiểu String
+    favorites: [Post]   # mảng các Post
+}
+
+# Định nghĩa Graphql schema cho model Post
+type Post {
+    title: String!
+    imageURL: String!
+    categories: [String]!   # mảng các string
+    description: String!
+    createdDate: String
+    likes: Int
+    createdBy: User!
+    messages: [Message]
+}
+
+type Message {
+    _id: ID
+    messageBody: String!
+    messageDate: String!
+    messageUser: User!
+}
