@@ -1,0 +1,36 @@
+type User {
+    _id: ID
+    username: String! @unique
+    email: String!
+    password: String!
+    avatar: String
+    joinDate: String
+    favorites: [Post]
+}
+
+type Post {
+    title: String!
+    imageUrl: String!
+    categories: [String]!
+    description: String!
+    createdDate: String
+    likes: Int
+    createdBy: User!
+    messages: [Message]
+}
+
+type Message {
+    _id: ID
+    messageBody: String!
+    messageDate: String
+    messageUser: User!
+}
+
+# // Mutation là một built-in def kiểu object, chứa các đặc tả function (có tham
+# // số và phải có kiểu dữ liệu kèm theo, và kiểu dữ liệu trả về (nếu có))
+# // để cập nhật dữ liệu.
+
+type Mutation {     # Đây là một built-in type của Graphql
+    # Function này bắt buộc phải return kiểu User
+    signupUser(username: String!, email: String!, password: String!): User!
+}

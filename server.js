@@ -6,10 +6,22 @@
 // Cú pháp này tương đương 2 lệnh sau:
 // ApolloServer = require("apollo-server").ApolloServer;
 // gql = require("apollo-server").gql;
-const { ApolloServer, gql } = require("apollo-server");
+// const { ApolloServer, gql } = require("apollo-server");
+const { ApolloServer } = require("apollo-server");
 
 // Khai báo sử dụng package mongoose để làm việc với mongoo DB
 const mongoose = require("mongoose");
+
+// Sử dụng các built-in package (không cần cài đặt) của NodeJS để thao tác với file
+const fs = require('fs');
+const path = require('path');
+
+// Lấy đường dẫn đến file typeDefs.gql. __dirname là đường dẫn đến thư mục của module hiện
+// hành. Hàm join để tạo đường dẫn đến file
+const filePath = path.join(__dirname, 'typeDefs.gql');
+
+// Đọc file theo cơ chế đồng bộ (chờ đợi hoàn tất)
+const typeDefs = fs.readFileSync(filePath, 'utf-8');
 
 // Kích hoạt code của package dotenv để truy cập các entry trong các file .env như 
 // các biến môi trường, environment variables.
@@ -49,16 +61,7 @@ const todos = [
 // Mutation là một built-in def kiểu object, chứa các đặc tả function (có tham
 // số và phải có kiểu dữ liệu kèm theo, và kiểu dữ liệu trả về (nếu có))
 // để cập nhật dữ liệu.
-const typeDefs = gql`
-type Todo {
-    task: String 
-    completed: Boolean
-}
 
-type Query {
-    getTodos: [Todo]
-}
-`;
 
 
 // Khởi tạo đối tượng Apollo Server và lưu kết quả trả về vào hằng server
@@ -67,6 +70,7 @@ const server = new ApolloServer({
 //    thành:
 //    typeDefs, resolvers
     typeDefs: typeDefs,
+    resolvers: resolvers,
     // Khai báo đối tượng context để Apollo server có thể truy cập 2 model User và Post
     context: {
         User,

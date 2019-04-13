@@ -25,7 +25,7 @@ const PostSchema = new mongoose.Schema({
         default: Date.now
     },
     likes: {
-        type: number,
+        type: Number,
         default: 0
     },
     createdBy: {
