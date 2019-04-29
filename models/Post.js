@@ -2,7 +2,7 @@
 // NodeJS sẽ tìm package bên trong thư mục node_modules
 const mongoose = require('mongoose');
 
-// Tạo schema cho model Post
+// Tạo Mongo schema cho model Post
 const PostSchema = new mongoose.Schema({
     title: {
         type: String,
@@ -28,6 +28,8 @@ const PostSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    // property('createdBy') === path
+    // ref('User') === model
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,

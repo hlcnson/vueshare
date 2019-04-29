@@ -1,17 +1,20 @@
+# Định nghĩa Graphql schema cho model User
 type User {
-    _id: ID
-    username: String! @unique
+    _id: ID     # Đây là field có kiểu ID, tự động gán giá trị bởi MongoDB
+    username: String!    # Dấu ! có nghĩa là require, @unique là duy nhất
     email: String!
     password: String!
     avatar: String
-    joinDate: String
-    favorites: [Post]
+    joinDate: String    # Graphql không có kiểu String
+    favorites: [Post]   # mảng các Post
 }
 
+# Định nghĩa Graphql schema cho model Post
 type Post {
+    _id: ID
     title: String!
     imageUrl: String!
-    categories: [String]!
+    categories: [String]!   # mảng các string
     description: String!
     createdDate: String
     likes: Int
@@ -26,11 +29,22 @@ type Message {
     messageUser: User!
 }
 
+# // Query (là một built-in type definition) sẽ chứa các function để truy vấn dữ liệu
+type Query {
+    # Query này không có tham số, trả về một mảng các post
+    getPosts: [Post]
+}
+
 # // Mutation là một built-in def kiểu object, chứa các đặc tả function (có tham
 # // số và phải có kiểu dữ liệu kèm theo, và kiểu dữ liệu trả về (nếu có))
 # // để cập nhật dữ liệu.
-
+# signupUser: Tạo user mới
+# addPost: Tạo một post mới
 type Mutation {     # Đây là một built-in type của Graphql
     # Function này bắt buộc phải return kiểu User
     signupUser(username: String!, email: String!, password: String!): User!
+    # Function này có kiểu trả về bắt buộc là Post
+    addPost(title: String!, imageUrl: String!, categories: [String]!, description: String!, creatorId: ID!): Post!
+    messageDate: String!
+    messageUser: User!
 }

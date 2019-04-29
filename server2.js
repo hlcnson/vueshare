@@ -12,6 +12,8 @@ const todos = [
     { task: 'Clean room', completed: true }
 ];
 
+// MÔ TẢ KIỂU DỮ LIỆU ĐỂ LÀM VIỆC VỚI GRAPHQL
+// Định nghĩa typedef để cung cấp cho phương thức khởi tạo Apollo server
 // MÔ TẢ SCHEMA VỀ KIỂU DỮ LIỆU VÀ QUERY ĐỂ LÀM VIỆC VỚI GRAPHQL
 // Định nghĩa typedef để cung cấp cho phương thức khởi tạo Apollo server
 // Đặc tả query để truy vấn dữ liệu.

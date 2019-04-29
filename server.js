@@ -23,6 +23,10 @@ const filePath = path.join(__dirname, 'typeDefs.gql');
 // Đọc file theo cơ chế đồng bộ (chờ đợi hoàn tất)
 const typeDefs = fs.readFileSync(filePath, 'utf-8');
 
+// Import module resolvers
+const resolvers = require('./resolvers');    // Không cần đuôi .js
+
+
 // Kích hoạt code của package dotenv để truy cập các entry trong các file .env như 
 // các biến môi trường, environment variables.
 // Kích hoạt require như một phương thức. Sau lệnh này, dotenv sẽ nạp các cặp entry/value 
@@ -38,33 +42,23 @@ require('dotenv').config({path: 'variables.env'});
 const User = require('./models/User');
 const Post = require('./models/Post.js');
 
-// Kết nối với cơ sở dữ liệu qua URI trong file variables.env
+// Kết nối với cơ sở dữ liệu MongoDB qua URI trong file variables.env
 mongoose
-    .connect(process.env.MONGO_URI, {useNewUrlParser: true})     // Kết nối DB
+    .connect(process.env.MONGO_URI, {useCreateIndex: true, useNewUrlParser: true})     // Kết nối DB
     .then(() => console.log('DB connected!'))   // Thông báo đã kết nối
     .catch(err => console.log(err));            // Thông báo lỗi kết nối
 
-
-// Tạo một mảng object
-const todos = [
-    { task: 'Wash car', completed: false },
-    { task: 'Clean room', completed: true }
-];
 
 // MÔ TẢ SCHEMA VỀ KIỂU DỮ LIỆU VÀ QUERY ĐỂ LÀM VIỆC VỚI GRAPHQL
 // Định nghĩa typedef để cung cấp cho phương thức khởi tạo Apollo server
 // Đặc tả query để truy vấn dữ liệu.
 // Đặc tả Mutation để cập nhật dữ liệu.
 
-// Query (là một built-in type definition) sẽ chứa các function để truy vấn dữ liệu
-// Function getTodos có kiểu return là mảng các đối tượng kiểu Todo.
-// Mutation là một built-in def kiểu object, chứa các đặc tả function (có tham
-// số và phải có kiểu dữ liệu kèm theo, và kiểu dữ liệu trả về (nếu có))
-// để cập nhật dữ liệu.
 
 
 
-// Khởi tạo đối tượng Apollo Server và lưu kết quả trả về vào hằng server
+// Khởi tạo đối tượng Apollo/Graphql Server và lưu kết quả trả về vào hằng server.
+// Truyền vào phương thức tạo các đối tượng typeDefs, resolvers đã import.
 const server = new ApolloServer({
 //    Tên thuộc tính và tên kiểu dữ liệu trùng nhau nên có thể viết gọn 
 //    thành:
