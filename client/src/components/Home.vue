@@ -3,111 +3,108 @@
     thuộc tính fluid để chiếm hết độ rộng màn hình.
     Dùng directive v-if để kiểm tra xem query đã được
     resolve hay chưa -->
-    <v-container v-if="getPosts">
-        
+    <v-container>
+        <v-layout row wrap>
+            <!-- Khi thuộc tính loading = true thì component này được
+            hiển thị. Component này hiển thị một dialog.
+            Thuộc tính persistent chỉ định khi user click bên ngoài
+            thì dialog có ẩn đi hay không.
+            Thuộc tính fullscreen chỉ định dialog chiếm trọn chiều cao
+            của trang Home.vue -->
+            <v-dialog v-model="loading" fullscreen persistent>
+                <v-container fill-height>
+                    <!-- Thuộc tính justify-center và align-center 
+                    canh lề ngay điểm trung tâm cho nội dung -->
+                    <v-layout row justify-center align-center>
+                        <!-- Component tạo hiệu ứng vòng xoay.
+                        Keyword indeterminate chỉ định vòng xoay liên tục
+                        do không biết trước thời điểm hoàn tất tác vụ.
+                        size: Đường kính vòng; width: Độ lớn đường biên -->
+                        <v-progress-circular indeterminate :size="70" 
+                        :width="12" color="secondary"></v-progress-circular>
+                    </v-layout>
+                </v-container>
+                
+            </v-dialog>
+        </v-layout>
+
         <v-layout row wrap text-xs-center mt-2>
             <v-flex xs12>
-
-                <v-carousel v-bind="{'cycle': true}" interval="3000">
-                    <v-carousel-item v-for="post in getPosts" :key="post._id" :src="post.imageUrl">
-                            <h1>{{post.title}}</h1>
+                <!-- Nếu mảng posts có phần tử mới render Carousel -->
+                <v-carousel v-if="!loading && posts.length > 0" v-bind="{'cycle': true}" interval="3000">
+                    <!-- posts là computed property của component này -->
+                    <v-carousel-item v-for="post in posts" :key="post._id" :src="post.imageUrl">
+                            <h1 id="carousel__title">{{post.title}}</h1>
                     </v-carousel-item>
                 </v-carousel>
             </v-flex>
         </v-layout>
     </v-container>
     
-    
-  
 </template>
 
 <script>
-// Import package tên gql trong dependency tên apollo-boost
-import { gql } from 'apollo-boost';
+
+
+// Import đối tượng map getter của Vuex
+import { mapGetters } from 'vuex'
 
 export default {
     name: 'home',
-    // Thuộc tính data của component phải là một function, vì component có thể được
-    // tái sử dụng cùng lúc nhiều nơi trong app, khi data có dạng function thì các
-    // thể hiện của component sẽ độc lập nhau về data. 
-    // Function trả về một đối tượng với các thuộc tính là dữ liệu của component.
-    //Cú pháp đầy đủ là: 
-    // data: function() {}
-    // data() {
-    //     return {
-    //         // Đối tượng graphql query
-    //         getPosts: gql`
-    //             query{
-    //                 getPosts {
-    //                     _id
-    //                     title
-    //                     imageUrl
-    //                     description
-    //                     likes
-    //                 }
-    //             }
-    //         `
-    // CÁCH 1: SỬ DỤNG SMART QUERY, KHÔNG SỬ DỤNG VUE APOLLO COMPONENT 
-            //posts:[]    // Mảng các post
-    //     }
-    // },
-    // Vue Apollo đã được cài đặt và inject vào mọi Vue component
-    // từ bên trong main.js. Tại Vue component này, sử dụng Vue
-    // Apollo thông qua thuộc tính tên apollo
-    apollo: {
-        // Đối tượng này của apollo để truy cập query tên getPosts 
-        // trên Apollo Graphql Server. Bên trong nó có các thuộc
-        // tính phục vụ cho việc chỉ định tên query, lệnh lấy
-        // dữ liệu từ query, hàm xử lý kết quả query trả về...
-        getPosts: {       // Tên query này phải chính xác với định nghĩa trong /typeDefs.gql
-                          // Query Function này phục vụ như một đối tượng và cần phải 
-                          // được chỉ định là một query hay mutation.
-            // Đây là một query, viết lệnh query trong cặp dấu `` (backtage). Phần bên trong
-            // cặp backtage theo cú pháp như trong Graphql playground (localhost:4000).
-            // Những field được truy vấn phải nằm trong tập field được trả về bởi Query
-            // tên getPosts.
-            // Function này sẽ trả về đối tượng mảng post có tên trùng với nó (getPosts),
-            // ĐÂY LÀ MỘT ĐIỂM QUAN TRỌNG CẦN PHẢI NHỚ RÕ. Tên này sẽ được sử dụng để
-            // truy cập dữ liệu các post được trả về từ bên trong component tên
-            // template ở trên.
-            query: gql`
-                query{
-                    getPosts {
-                        _id
-                        title
-                        imageUrl
-                        description
-                        likes
-                    }
-                }
-            `,
-            // Sử dụng kỹ thuật JS destructuring để destructure giá trị cho
-            // các tham số. Javascript tự phân rã dữ liệu trả về bởi query ở 
-            // trên và đặt vào 2 biến trong đối tượng tham số là data và 
-            // loading. Hàm này giúp làm việc dữ liệu do query ở trên trả về.
-            // data: dữ liệu trả về; loading: trạng thái đang loading của apollo
-                // result({ data, loading }) {
-                //     if (!loading) {     // query đã được resolve
-                //         // Lưu kết quả của query vào thuộc tính dữ liệu posts của component
-                //         this.posts = data.getPosts;
-                //     }
-                // },
-            // Cách không dùng tính năng JS destructuring, tham số là một đối tượng
-            // chứa đầy đủ thông tin như data, loading, networkStatus,...
-            // Cú pháp:
-                // result(args) { 
-                //    console.dir(args)     // Hiển thị mọi thuộc tính dữ liệu có trong args
-                // }
-            // Phương thức để xử lý lỗi
-                // error(err) {
-                //     console.error('[LỖI]', err)
-                //     console.dir(err)        // Hiển thị mọi thuộc tính dữ liệu có trong err
-                // }
-            // XEM HƯỚNG DẪN VỀ SMART QUERY TẠI: 
-            // https://akryum.github.io/vue-apollo/api/smart-query.html
+    created(){      // created là một hook trong Comopnent life cycle
+                    // được tự động kích hoạt khi nạp component.
+        // Khi component vừa được tạo, kích hoạt phương thức
+        // handleGetCarouselPosts
+        this.handleGetCarouselPosts()
+    },
+    computed: {
+        // Computed property này dùng để lấy giá trị posts trong
+        // Vuex store.
+        // Truy cập thông qua đối tượng store, đối tượng này
+        // đã được inject vào Vue instance trong main.js.
+        // Cú pháp truy cập Vuex store: this.$store
+        // posts() {
+        //     return this.$store.getters.posts
+        // },
 
-        } 
-    }
+        // Computed property này dùng để lấy giá trị biến loading
+        // xác định trạng thái resolve của query trong Vuex store
+        // loading() {
+        //     return this.$store.getters.loading
+        // }
+
+        // VIẾT LẠI BẰNG CÚ PHÁP SỬ DỤNG MapGetter của Vuex, có
+        // sử dụng toán tử spread (...) của JS.
+        // mapGetters sẽ ánh xạ computer property tên posts
+        // sang dữ liệu this.$store.getters.posts.
+        // Và tương tự với computer property tên loading
+        ...mapGetters(['posts', 'loading'])
+    },
+    methods: {
+        handleGetCarouselPosts() {
+            // Truy cập Vuex store, kích hoạt action tên getPosts để lấy
+            // post cho component carousel.
+            // Truy cập thông qua đối tượng store, đối tượng này
+            // đã được inject vào Vue instance trong main.js.
+            // Cú pháp truy cập Vuex store: this.$store
+            this.$store.dispatch('getPosts')
+        }
+    }   
 }
 </script>
 
+<style>
+    #carousel__title {
+        /* Đưa phần tử xuống bottom của phần tử cha */
+        position: absolute;
+        bottom: 50px;
+        left: 0;
+        right: 0;
+        /* Tạo overlay background trùng với carousel */
+        background-color: rgba(0,0,0,0.5);
+        color: #ffffff;
+        /* border-radius: 5px 5px 0 0; */
+        padding: 0.3em;
+        /* margin: 0 auto; */
+    }
+</style>
